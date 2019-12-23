@@ -1,26 +1,57 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {
+  ChangeEvent,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction
+} from "react";
+import "./App.scss";
+interface FieldProps {
+  label: string;
+  type: string;
+  value: Dispatch<SetStateAction<string>>;
+  children?: ReactNode;
+}
 
-const App: React.FC = () => {
+interface useFieldProps {
+  label: string;
+  type: string;
+}
+const Field: React.FC<FieldProps> = (props: FieldProps) => {
+  const { label, type, value } = props;
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="field">
+      <span>{label}:</span>
+      <input
+        type={type}
+        title={label}
+        alt={label}
+        onChange={e => value(e.target.value)}
+      />
     </div>
   );
-}
+};
+
+const useField: any = (Props: useFieldProps) => {
+  const { label, type } = Props;
+  const [value, changeValue] = useState("");
+  return [<Field label={label} type={type} value={changeValue} />, value];
+};
+
+const App: React.FC = () => {
+  const [emailField, emailValue] = useField({ label: "Email", type: "email" });
+  const [descriptionField, descriptionValue] = useField({
+    label: "Description",
+    type: "text"
+  });
+  return (
+    <div className="wrapper">
+      <div className="formWrapper">
+        {emailField}
+        {descriptionField}
+      </div>
+    </div>
+  );
+};
 
 export default App;
